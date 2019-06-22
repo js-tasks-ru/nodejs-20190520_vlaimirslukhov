@@ -28,7 +28,10 @@ server.on('request', (req, res) => {
     req
         .pipe(limitedStream)
         .on('error', ({code}) => {
-          if (code === 'LIMIT_EXCEEDED') sendResponse(413, 'File size is too big');
+          if (code === 'LIMIT_EXCEEDED') {
+            fs.unlinkSync(filepath);
+            sendResponse(413, 'File size is too big');
+          }
         })
         .pipe(writeStream)
         .on('error', ({code}) => {
